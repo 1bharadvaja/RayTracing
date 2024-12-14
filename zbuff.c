@@ -11,30 +11,27 @@ void init_zbuffer() {
 
 void putpixel(int x, int y, float z, Color color) {
     if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT) {
-        return; // Clip pixels outside viewport
+        return; 
     }
 
     int index = y * WIDTH + x;
     if (z < zbuffer[index]) {
         zbuffer[index] = z;
-        // Draw pixel to framebuffer
         framebuffer[index] = color;
     }
 }
 
 void draw_triangle(Vec3 v0, Vec3 v1, Vec3 v2, Color color) {
-    // Project 3D vertices to 2D screen space
+
     Vec2 p0 = project(v0);
     Vec2 p1 = project(v1);
     Vec2 p2 = project(v2);
-
-    // Calculate bounding box
     int minX = fmin(fmin(p0.x, p1.x), p2.x);
     int maxX = fmax(fmax(p0.x, p1.x), p2.x);
     int minY = fmin(fmin(p0.y, p1.y), p2.y);
     int maxY = fmax(fmax(p0.y, p1.y), p2.y);
 
-    // Rasterize
+
     for (int y = minY; y <= maxY; y++) {
         for (int x = minX; x <= maxX; x++) {
             Vec3 barycentric = barycentric_coordinates(x, y, p0, p1, p2);
@@ -47,7 +44,7 @@ void draw_triangle(Vec3 v0, Vec3 v1, Vec3 v2, Color color) {
 }
 
 Vec2 project(Vec3 v) {
-    // Simple perspective projection
+
     float fov = 90.0f;
     float aspect = (float)WIDTH / HEIGHT;
     float znear = 0.1f;
@@ -57,7 +54,6 @@ Vec2 project(Vec3 v) {
     float x = v.x * f / aspect;
     float y = v.y * f;
 
-    // Convert to screen coordinates
     x = (x + 1.0f) * WIDTH * 0.5f;
     y = (1.0f - y) * HEIGHT * 0.5f;
 
